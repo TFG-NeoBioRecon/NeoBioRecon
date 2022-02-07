@@ -7,15 +7,32 @@ import pickle
 import struct
 from time import time
 
+
+PASSWORD = b"change_me"
+
+def WrongPassword(conn, addr):
+    try:
+        if conn.recv(1024) != PASSWORD:
+            print("Incorrect password from ", addr[0])
+            conn.send(b"flag{Leave_my_server_alone}")
+            conn.close()
+            print(addr[0], "Successfully Kicked!")
+            return True
+    except:
+        return True
+
+
 # Iterator, Accepts and returns new connections
 def ConnectionHandler(s):
-	while True:
-		# Accepts new inbound connections
-		conn,addr=s.accept()
-		print("Connection From ", addr[0])
-		# Returns connection object and address
-		yield conn, addr
+    while True:
+        # Accepts new inbound connections
+        conn,addr = s.accept()
+        print("Connection From ", addr[0])
 
+        #                             Avoid yield
+        if WrongPassword(conn, addr): continue
+        # Returns connection object and address
+        yield conn, addr
 
 # Open Socket on specified port for incoming connections
 def BindSocket(HOST, PORT):
