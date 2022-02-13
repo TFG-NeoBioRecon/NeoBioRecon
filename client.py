@@ -4,7 +4,6 @@ import struct
 import pickle
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import binascii
 from os.path import exists
 
 

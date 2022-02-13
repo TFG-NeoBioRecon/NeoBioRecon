@@ -8,7 +8,6 @@ import struct
 from time import time
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-import binascii
 from Crypto.Random import get_random_bytes
 
 def Auth(conn, addr):
