@@ -6,33 +6,61 @@ import cv2
 import pickle
 import struct
 from time import time
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+import binascii
+from Crypto.Random import get_random_bytes
+
+def Auth(conn, addr):
+	session_key = get_random_bytes(16)
+	try:
+		print("Getting public key from ",addr[0])
+		#Falta poner un time out o algo, un atacante puede 
+		#abrir un netcat no introducir nada y denegar la conxiona clientes ya que esta no va por hilos
+		pubkey = RSA.import_key(conn.recv(1024))
+
+		#Checking if public key si found in auth file
+		with open('authorized_keys') as authk_file:
+			if pubkey.export_key().decode("ascii") not in authk_file.read():
+				print('Public key not found in auth file')
+				conn.send(b"flag{Leave_my_server_alone}")
+				conn.close()
+				print(addr[0], "Successfully Kicked!")
+				return True
 
 
-PASSWORD = b"change_me"
+		cipher = PKCS1_OAEP.new(pubkey)
+		conn.send((cipher.encrypt(session_key)))
+		print("Ciphered session key sent to ",addr[0])
 
-def WrongPassword(conn, addr):
-    try:
-        if conn.recv(1024) != PASSWORD:
-            print("Incorrect password from ", addr[0])
-            conn.send(b"flag{Leave_my_server_alone}")
-            conn.close()
-            print(addr[0], "Successfully Kicked!")
-            return True
-    except:
-        return True
+		if conn.recv(1024) != session_key:
+			print("Failed to decrypt chiphertext ", addr[0])
+			conn.send(b"flag{Leave_my_server_alone}")
+			conn.close()
+			print(addr[0], "Successfully Kicked!")
+			return True
+
+		else:
+			print(addr[0], "authenticated successfully")
+		return True
+
+	except Exception as e:
+		print('ERROR:',str(e),"from", addr[0])
+		conn.close()
+		return True
 
 
-# Iterator, Accepts and returns new connections
+# Iterator,k Accepts and returns new connections
 def ConnectionHandler(s):
-    while True:
-        # Accepts new inbound connections
-        conn,addr = s.accept()
-        print("Connection From ", addr[0])
+	while True:
+		# Accepts new inbound connections
+		conn,addr = s.accept()
+		print("Connection From ", addr[0])
 
-        #                             Avoid yield
-        if WrongPassword(conn, addr): continue
-        # Returns connection object and address
-        yield conn, addr
+		#                             Avoid yield
+		if Auth(conn, addr): continue
+		# Returns connection object and address
+		yield conn, addr
 
 # Open Socket on specified port for incoming connections
 def BindSocket(HOST, PORT):
@@ -135,7 +163,7 @@ def Main(conn, addr):
 
 # Setup the server and wait for Clients
 def Server():
-	HOST='0.0.0.0'
+	HOST='127.0.0.1'
 	PORT=8181
 	# Create Socket and listen
 	s = BindSocket(HOST, PORT)
