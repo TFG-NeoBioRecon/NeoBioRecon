@@ -50,7 +50,9 @@ cam.set(12, 14500);
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 img_counter = 0
 
-
+def AESCipher(key):
+    cipher = AES.new(key, AES.MODE_EAX)
+    return cipher
 #session_key
 cipher = AESCipher(session_key)
 client_socket.send(cipher.nonce)
