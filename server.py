@@ -63,7 +63,6 @@ def Auth(conn, addr):
         print(Logdate(), "[LOG]", addr[0], "authenticated successfully")
         # get nonce
         nonce = conn.recv(1024)
-        print(nonce)
         cipher = AES.new(session_key, AES.MODE_EAX, nonce)
         Main(conn, addr, cipher)
         return True
