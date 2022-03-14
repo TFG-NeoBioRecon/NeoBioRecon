@@ -131,3 +131,4 @@ dmypy.json
 #Keys files
 pub_key
 priv_key
+authorized_keys
