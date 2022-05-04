@@ -14,7 +14,23 @@ def Query(user, room):
 
 	result = (mycursor.fetchall())
 	mycursor.close()
+	mydb.close()
 	if "TRUE" in result[0]:
 		return True
 	else:
 		return False
+
+def RoomLog(user, room):
+	user = str(user)
+	room = room.decode('utf-8')
+	mydb = mysql.connector.connect(
+	host="localhost",
+	user="biorecondb",
+	password="g>m2keALñ&c>&NS",
+	database= 'biorecondb01'
+	)
+	mycursor = mydb.cursor()
+	mycursor.execute("INSERT INTO room_logs (rom_id,usr_id) VALUES ("+room+",(SELECT id FROM users WHERE uid = '"+user+"'))")
+	mydb.commit()
+	mycursor.close()
+	mydb.close()
