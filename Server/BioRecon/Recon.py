@@ -3,7 +3,7 @@ import cv2
 import os
 import time
 
-dataPath = 'faces/'
+dataPath = 'BioRecon/faces/'
 imagePaths = os.listdir(dataPath)
 print('imagePaths=',imagePaths)
 
