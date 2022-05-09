@@ -3,7 +3,7 @@ from BioRecon.Auth import Auth
 from BioRecon.CV2Frames import ReceiveFrames
 from BioRecon.Recon import Recognizer
 from BioRecon.Log import Logdate
-from BioRecon.ReconDB import Query
+from BioRecon.ReconDB import Query, RoomLog
 from _thread import start_new_thread as thread
 
 HOST = "0.0.0.0"
@@ -24,6 +24,8 @@ def NeoBioRecon(conn, addr, cipher, encrypter):
             if Query(uid, room_id):
                 conn.send(encrypter.encrypt(b'True'))
                 print(Logdate(), "[LOG] Authorized opening door")
+                RoomLog(uid,room_id)
+
 
             else:
                 print(Logdate(), "[LOG] Unauthorized")
