@@ -45,7 +45,7 @@ def OTP(user,token):
 	statement = "INSERT INTO otp (usr_id,token) VALUES ((SELECT id FROM users WHERE uid='"+user+"'),'"+token+"')"
 	mycursor.execute(statement)
 	dbconn.commit()
-	t_end = time.time() +10 #Wait x s for user to click on otp link
+	t_end = time.time() +20 #Wait x s for user to click on otp link
 	statement = "SELECT authed FROM otp JOIN users ON otp.usr_id=users.id WHERE users.uid='"+user+"'"
 	mycursor.close()
 	while time.time() < t_end:

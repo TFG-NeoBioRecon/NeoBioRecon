@@ -29,7 +29,7 @@ def Recognizer(frame):
 
 		if result[1] < 70:
 			recognized.append(result[0])
-			if len(recognized) == 40:
+			if len(recognized) == 100:
 				return(MostFrequent(recognized))
 			cv2.putText(frame,'{}'.format(imagePaths[result[0]]),(x,y-25),2,1.1,(219,79,203),1,cv2.LINE_AA)
 			cv2.rectangle(frame, (x,y),(x+w,y+h),(219,79,203),2)
@@ -41,6 +41,7 @@ def MostFrequent(recognized):
     i = max(set(recognized), key = recognized.count)
     uid = imagePaths[i]
     print(Logdate(), "[LOG]", f"recognized uid {uid}")
+    print(recognized)
     recognized.clear()
     return uid
 
