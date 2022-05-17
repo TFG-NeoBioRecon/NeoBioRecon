@@ -3,7 +3,7 @@ import cv2
 import os
 import time
 
-dataPath = 'faces/'
+dataPath = 'BioRecon/faces/'
 imagePaths = os.listdir(dataPath)
 print('imagePaths=',imagePaths)
 
@@ -29,7 +29,7 @@ def Recognizer(frame):
 
 		if result[1] < 70:
 			recognized.append(result[0])
-			if len(recognized) == 40:
+			if len(recognized) == 75:
 				return(MostFrequent(recognized))
 			cv2.putText(frame,'{}'.format(imagePaths[result[0]]),(x,y-25),2,1.1,(219,79,203),1,cv2.LINE_AA)
 			cv2.rectangle(frame, (x,y),(x+w,y+h),(219,79,203),2)
@@ -38,10 +38,19 @@ def Recognizer(frame):
 			cv2.rectangle(frame, (x,y),(x+w,y+h),(0,0,255),2)
 
 def MostFrequent(recognized):
-    i = max(set(recognized), key = recognized.count)
-    uid = imagePaths[i]
-    print(Logdate(), "[LOG]", f"recognized uid {uid}")
-    recognized.clear()
-    return uid
+	last_five=recognized[-5:]
+	i = max(set(recognized), key = recognized.count)
+	j = max(set(last_five), key = last_five.count)
+	if i == j:
+		uid = imagePaths[i]
+		print(Logdate(), "[LOG]", f"recognized uid {uid}")
+		recognized.clear()
+		return uid
+	else: 
+		#print(recognized)
+		recognized.clear()
+		return False
+
+	
 
 cv2.destroyAllWindows()
